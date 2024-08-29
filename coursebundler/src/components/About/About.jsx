@@ -2,12 +2,13 @@ import { Avatar, Button, Container, HStack, Heading, Stack, Text, VStack } from 
 import React from 'react'
 import { Link } from 'react-router-dom'
 import intro from '../../assets/video/intro.mp4'
+import imag from '../../assets/images/admin.png'
 import { RiSecurePaymentFill } from 'react-icons/ri'
 const Founder = () => (
     <Stack direction={['column', 'row']} spacing={['4', '16']} padding={'8'}>
 
         <VStack>
-            <Avatar boxSize={['40', '48']} />
+            <Avatar boxSize={['40', '48']} src={imag} />
             <Text children='Co-Founder' opacity={'0.7'} />
         </VStack>
         <VStack justifyContent={'center'} alignItems={['center', 'flex-start']}>

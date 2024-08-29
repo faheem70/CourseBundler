@@ -1,9 +1,7 @@
 import { Button, Container, HStack, Heading, Image, Input, Stack, Text, VStack } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-
-
-
+import axios from 'axios';
 
 const Course = ({ views, title, imageSrc, id, addToPlaylistHandler, creator, description, lectureCount }) => {
     return (
@@ -28,7 +26,6 @@ const Course = ({ views, title, imageSrc, id, addToPlaylistHandler, creator, des
                 children={`Lectures - ${lectureCount}`}
                 textTransform={'uppercase'} />
             <Heading
-
                 size={'xs'}
                 children={`Views - ${views}`}
                 textTransform={'uppercase'} />
@@ -37,46 +34,85 @@ const Course = ({ views, title, imageSrc, id, addToPlaylistHandler, creator, des
                 <Link to={`/course/${id}`}>
                     <Button colorScheme='yellow'>Watch Now</Button>
                 </Link>
-                <Button variant={'ghost'} colorScheme='yellow' onClick={() => addToPlaylistHandler}>Add To Playlist</Button>
+                <Button variant={'ghost'} colorScheme='yellow' onClick={() => addToPlaylistHandler(id)}>Add To Playlist</Button>
             </Stack>
-
-
         </VStack>
     )
 }
 
-
 const Courses = () => {
+    const [courses, setCourses] = useState([]);
     const [keyword, setKeyword] = useState('');
     const [category, setCategory] = useState('');
 
-    const addToPlaylistHandler = () => {
-        console.log("Add To playlist")
-    }
     const categories = [
         "App Development",
         "Web Development",
-        "Data Structures & Algrithm",
+        "Data Structures & Algorithm",
         "Machine Learning",
         "Artificial Intelligence",
         "Data Science"
     ];
 
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const { data } = await axios.get('http://localhost:4000/api/v1/course', {
+                    withCredentials: true,
+                });
+                setCourses(data.courses);
+            } catch (error) {
+                console.error(error.response.data.message);
+            }
+        };
+
+        fetchCourses();
+    }, []);
+
+    // Filter courses based on keyword and category
+    const filteredCourses = courses.filter(course =>
+        course.title.toLowerCase().includes(keyword.toLowerCase()) &&
+        (category ? course.category === category : true)
+    );
+
+    const addToPlaylistHandler = (courseId) => {
+        console.log("Add To playlist", courseId);
+    }
+
     return (
         <Container minH={'95vh'} maxW={'container.lg'} paddingY={'8'}>
             <Heading children='All Courses' m={'8'} />
 
-            <Input value={keyword} onChange={(e) => setKeyword(e.target.value)}
-                placeholder='Search a course' type='text' focusBorderColor='yellow' />
+            <Input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder='Search a course'
+                type='text'
+                focusBorderColor='yellow'
+            />
 
-            <HStack overflowX={'auto'} padding={'8'} css={{ '&:: -webkit-scrollbar': { display: 'none' } }}>
+            <HStack overflowX={'auto'} padding={'8'} css={{ '&::-webkit-scrollbar': { display: 'none' } }}>
                 {
                     categories.map((item, index) => (
-                        <Button colorScheme='yellow' variant={'ghost'} key={index} onClick={() => setCategory(item)} minW={'60'}>
+                        <Button
+                            colorScheme='yellow'
+                            variant={'ghost'}
+                            key={index}
+                            onClick={() => setCategory(item)}
+                            minW={'60'}
+                        >
                             <Text children={item} />
                         </Button>
                     ))
                 }
+                <Button
+                    colorScheme='yellow'
+                    variant={'ghost'}
+                    onClick={() => setCategory('')}
+                    minW={'60'}
+                >
+                    <Text children="All Categories" />
+                </Button>
             </HStack>
 
             <Stack
@@ -84,24 +120,29 @@ const Courses = () => {
                 flexWrap={'wrap'}
                 justifyContent={['flex-start', 'space-evenly']}
                 alignItems={['center', 'flex-start']}
-
             >
-                <Course
-                    title={"sample"}
-                    description={'sample'}
-                    views={33}
-                    imageSrc={"https://www.totalphase.com/media/blog/2022/11/960x0.jpg"}
-                    id={'sample'}
-                    creator={'saomle p'}
-                    lectureCount={23}
-                    addToPlaylistHandler={addToPlaylistHandler}
-
-                />
-
+                {
+                    filteredCourses.length > 0 ? (
+                        filteredCourses.map(course => (
+                            <Course
+                                key={course._id}
+                                title={course.title}
+                                description={course.description}
+                                views={course.views}
+                                imageSrc={course.poster.url}
+                                id={course._id}
+                                creator={course.createdBy}
+                                lectureCount={course.numOfVideos}
+                                addToPlaylistHandler={addToPlaylistHandler}
+                            />
+                        ))
+                    ) : (
+                        <Text>No courses found</Text>
+                    )
+                }
             </Stack>
-
         </Container>
     )
 }
 
-export default Courses
+export default Courses;

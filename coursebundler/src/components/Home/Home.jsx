@@ -14,6 +14,7 @@ const Home = () => {
     return (
         <section className='home'>
             <div className='container'>
+        
                 <Stack
                     direction={["column", "row"]} height="100%" justifyContent={["center", "space-between"]}
                     alignItems="center"
@@ -22,7 +23,7 @@ const Home = () => {
                     <VStack width={'full'} alignItems={['center', 'flex-end']}>
                         <Heading children="LEARN FROM THE EXPERTS" size={'xl'} />
                         <Text textAlign={['center', 'left']} children='Find a vlauable content at reasonble price' />
-                        <Link to={"/courses"}>
+                        <Link to={"/enroll"}>
                             <Button size={'lg'} colorScheme='yellow'>
                                 Enroll Now
                             </Button>

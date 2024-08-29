@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Avatar, Box, Button, Container, FormLabel, Heading, Input, VStack } from '@chakra-ui/react'
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import axios from 'axios'
 
 export const fileUploadCss = {
     cursor: 'pointer',
@@ -20,7 +21,8 @@ const Register = () => {
     const [password, setPassword] = useState('')
     const [name, setName] = useState('')
     const [imagePrev, setImagePrev] = useState('');
-    const [Image, setImage] = useState('');
+    const [image, setImage] = useState('');
+    const navigate = useNavigate();
 
     const chnageImageHandler = (e) => {
         const file = e.target.files[0];
@@ -32,14 +34,37 @@ const Register = () => {
         };
     };
 
+    const submitHandler = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('avatar', image);
+
+        try {
+            const { data } = await axios.post('http://localhost:4000/api/v1/createuser', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+             
+            alert(data.message);
+            navigate('/login');
+        } catch (error) {
+            alert(error.response.data.message);
+        }
+    };
+
     return (
         <Container h={'95vh'}>
             <VStack h={'full'} justifyContent={"center"} >
 
                 <Heading children={'User Registeration'} />
 
-                <form style={{ width: '100%' }}>
-                    <Box my={'4'} justifyContent={'center'} display={'flex'} >
+                <form style={{ width: '100%' }} onSubmit={submitHandler}>
+                    <Box my={'4'} justifyContent={'center'} display={'flex'}  >
                         <Avatar src={imagePrev} size={'xl'} />
                     </Box>
                     <Box my={'4'}>

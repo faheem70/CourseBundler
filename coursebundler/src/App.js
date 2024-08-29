@@ -20,13 +20,13 @@ import Dashboard from './components/Admin/Dashboard/Dashboard';
 import CreateCourses from './components/Admin/CreateCourse/CreateCourses';
 import AdminCourses from './components/Admin/AdminCourses/AdminCourses';
 import Users from './components/Admin/Users/Users';
+import EnrollmentForm from './components/Auth/EnrollmentForm';
+
 
 function App() {
 
-
-
-
   return (
+   
     <Router>
       <Header />
       <Routes>
@@ -48,6 +48,7 @@ function App() {
         <Route path='/admin/createcourse' element={<CreateCourses />} />
         <Route path='/admin/courses' element={<AdminCourses />} />
         <Route path='/admin/users' element={<Users />} />
+        <Route path='/enroll' element={<EnrollmentForm />} />
       </Routes>
       <Footer />
     </Router>
